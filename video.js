@@ -55,10 +55,10 @@ function disPlayVideo(videos) {
         videoContainer.innerHTML="";
         const card = document.createElement('div');
         card.innerHTML=`
-        <img src='images/Icon.png'>
+        <img src="images/Icon.png">
         <p>No Content Here </p>
         
-        `
+        `;
 
         videoContainer.appendChild(card);
     }
@@ -89,6 +89,8 @@ function disPlayVideo(videos) {
     
         <p>${video.authors[0].verified==true?'<img src="https://img.icons8.com/?size=48&id=D9RtvkuOe31p&format=png" class="w-5 h-5 rounded-full">':""}</P>
        </div>
+
+       <p class="view">${video.others.views}</p>
     
        </div>
       
@@ -118,12 +120,38 @@ document.getElementById('search-text').addEventListener('keyup' , (e)=>{
 function searchTitle(Text){
     fetch(`https://openapi.programming-hero.com/api/phero-tube/videos?title=${Text}`)
     .then(res=>res.json())
-    .then(data=>disPlayVideo((data.videos)))
+    .then(data=>disPlayVideo(data.videos))
     
     
 }
 
+function Views(){
+
+
+    fetch('https://openapi.programming-hero.com/api/phero-tube/videos')
+        .then(res => res.json())
+        .then(data => sortViews(data.videos))
+}
+
+function convertViews(viewString) {
+    return parseInt(viewString.replace('K', '000'));
+  }
+ 
+  
+
+
+function sortViews(videos){
+     
+  videos.sort((a, b) => {
+    return convertViews(b.others.views) - convertViews(a.others.views);
+  });
+
+  disPlayVideo(videos);
+}
+
 loadCategory();
 
-
+document.getElementById('sortButton').addEventListener('click',()=>{
+    Views();
+});
 loadVideo();
